@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>3D modeling</title>
+    <meta charset="utf-8" />
+    <meta name="description" content="&lt;model-viewer&gt; template" />
+    <meta name="viewport" content="width=80%, initial-scale=1" />
+    <link type="text/css" href="./css/3D index.css" rel="stylesheet" />
+  </head>
+  <body>
+    <section>
+      <h3>크기</h3>
+      <!-- 유물 scale 추가: -->
+      <model-viewer
+        id="dimension-demo"
+        ar
+        ar-modes="webxr"
+        ar-scale="fixed"
+        camera-orbit="-10deg auto auto"
+        max-camera-orbit="auto 100deg auto"
+        shadow-intensity="1"
+        camera-controls
+        touch-action="pan-y"
+        src="./3D file/Levallois-core.glb"
+        tone-mapping="commerce"
+        alt="Levallois-core"
+      >
+        <button
+          slot="hotspot-dot+X-Y+Z"
+          class="dot"
+          data-position="1 -1 1"
+          data-normal="1 0 0"
+        ></button>
+        <button
+          slot="hotspot-dim+X-Y"
+          class="dim"
+          data-position="1 -1 0"
+          data-normal="1 0 0"
+        ></button>
+        <button
+          slot="hotspot-dot+X-Y-Z"
+          class="dot"
+          data-position="1 -1 -1"
+          data-normal="1 0 0"
+        ></button>
+        <button
+          slot="hotspot-dim+X-Z"
+          class="dim"
+          data-position="1 0 -1"
+          data-normal="1 0 0"
+        ></button>
+        <button
+          slot="hotspot-dot+X+Y-Z"
+          class="dot"
+          data-position="1 1 -1"
+          data-normal="0 1 0"
+        ></button>
+        <button
+          slot="hotspot-dim+Y-Z"
+          class="dim"
+          data-position="0 -1 -1"
+          data-normal="0 1 0"
+        ></button>
+        <button
+          slot="hotspot-dot-X+Y-Z"
+          class="dot"
+          data-position="-1 1 -1"
+          data-normal="0 1 0"
+        ></button>
+        <button
+          slot="hotspot-dim-X-Z"
+          class="dim"
+          data-position="-1 0 -1"
+          data-normal="-1 0 0"
+        ></button>
+        <button
+          slot="hotspot-dot-X-Y-Z"
+          class="dot"
+          data-position="-1 -1 -1"
+          data-normal="-1 0 0"
+        ></button>
+        <button
+          slot="hotspot-dim-X-Y"
+          class="dim"
+          data-position="-1 -1 0"
+          data-normal="-1 0 0"
+        ></button>
+        <button
+          slot="hotspot-dot-X-Y+Z"
+          class="dot"
+          data-position="-1 -1 1"
+          data-normal="-1 0 0"
+        ></button>
+        <svg
+          id="dimLines"
+          width="100%"
+          height="100%"
+          xmlns="http://www.w3.org/2000/svg"
+          class="dimensionLineContainer"
+        >
+          <line class="dimensionLine"></line>
+          <line class="dimensionLine"></line>
+          <line class="dimensionLine"></line>
+          <line class="dimensionLine"></line>
+          <line class="dimensionLine"></line>
+        </svg>
+
+        <div id="controls" class="dim">
+          <label for="src">Product:</label>
+          <select id="src">
+            <option value="./3d file/Levallois-core.glb">Levallois-core</option>
+            <option value="./3d file/micro blade core.glb">
+              Micro Blade Core
+            </option>
+            <option value="./3d file/Bowl.glb">토기 융기문 발</option>
+            <option value="./3d file/bronze Artifacts2.glb">세형동검</option>
+            <option value="./3d file/Bodhisattva.glb">
+              금동미륵보살반가사유상(1978)
+            </option></select
+          ><br />
+          <label for="show-dimensions">Show Dimensions:</label>
+          <input id="show-dimensions" type="checkbox" checked="true" />
+        </div>
+      </model-viewer>
+    </section>
+
+    <!-- scale: -->
+    <script type="module">
+      const modelViewer2 = document.querySelector('#dimension-demo');
+
+      modelViewer2.querySelector('#src').addEventListener('input', (event) => {
+        modelViewer2.src = event.target.value;
+      });
+
+      const checkbox = modelViewer2.querySelector('#show-dimensions');
+
+      const dimElements = [
+        ...modelViewer2.querySelectorAll('button'),
+        modelViewer2.querySelector('#dimLines'),
+      ];
+
+      function setVisibility(visible) {
+        dimElements.forEach((element) => {
+          if (visible) {
+            element.classList.remove('hide');
+          } else {
+            element.classList.add('hide');
+          }
+        });
+      }
+
+      checkbox.addEventListener('change', () => {
+        setVisibility(checkbox.checked);
+      });
+
+      modelViewer2.addEventListener('ar-status', (event) => {
+        setVisibility(event.detail.status !== 'session-started');
+      });
+
+      // update svg
+      function drawLine(svgLine, dotHotspot1, dotHotspot2, dimensionHotspot) {
+        if (dotHotspot1 && dotHotspot2) {
+          svgLine.setAttribute('x1', dotHotspot1.canvasPosition.x);
+          svgLine.setAttribute('y1', dotHotspot1.canvasPosition.y);
+          svgLine.setAttribute('x2', dotHotspot2.canvasPosition.x);
+          svgLine.setAttribute('y2', dotHotspot2.canvasPosition.y);
+
+          // use provided optional hotspot to tie visibility of this svg line to
+          if (dimensionHotspot && !dimensionHotspot.facingCamera) {
+            svgLine.classList.add('hide');
+          } else {
+            svgLine.classList.remove('hide');
+          }
+        }
+      }
+
+      const dimLines = modelViewer2.querySelectorAll('line');
+
+      const renderSVG = () => {
+        drawLine(
+          dimLines[0],
+          modelViewer2.queryHotspot('hotspot-dot+X-Y+Z'),
+          modelViewer2.queryHotspot('hotspot-dot+X-Y-Z'),
+          modelViewer2.queryHotspot('hotspot-dim+X-Y')
+        );
+        drawLine(
+          dimLines[1],
+          modelViewer2.queryHotspot('hotspot-dot+X-Y-Z'),
+          modelViewer2.queryHotspot('hotspot-dot+X+Y-Z'),
+          modelViewer2.queryHotspot('hotspot-dim+X-Z')
+        );
+        drawLine(
+          dimLines[2],
+          modelViewer2.queryHotspot('hotspot-dot+X+Y-Z'),
+          modelViewer2.queryHotspot('hotspot-dot-X+Y-Z')
+        ); // always visible
+        drawLine(
+          dimLines[3],
+          modelViewer2.queryHotspot('hotspot-dot-X+Y-Z'),
+          modelViewer2.queryHotspot('hotspot-dot-X-Y-Z'),
+          modelViewer2.queryHotspot('hotspot-dim-X-Z')
+        );
+        drawLine(
+          dimLines[4],
+          modelViewer2.queryHotspot('hotspot-dot-X-Y-Z'),
+          modelViewer2.queryHotspot('hotspot-dot-X-Y+Z'),
+          modelViewer2.queryHotspot('hotspot-dim-X-Y')
+        );
+      };
+
+      modelViewer2.addEventListener('load', () => {
+        const center = modelViewer2.getBoundingBoxCenter();
+        const size = modelViewer2.getDimensions();
+        const x2 = size.x / 2;
+        const y2 = size.y / 2;
+        const z2 = size.z / 2;
+
+        modelViewer2.updateHotspot({
+          name: 'hotspot-dot+X-Y+Z',
+          position: `${center.x + x2} ${center.y - y2} ${center.z + z2}`,
+        });
+
+        modelViewer2.updateHotspot({
+          name: 'hotspot-dim+X-Y',
+          position: `${center.x + x2 * 1.2} ${center.y - y2 * 1.1} ${center.z}`,
+        });
+        modelViewer2.querySelector(
+          'button[slot="hotspot-dim+X-Y"]'
+        ).textContent = `${(size.z * 100).toFixed(0)} cm`;
+
+        modelViewer2.updateHotspot({
+          name: 'hotspot-dot+X-Y-Z',
+          position: `${center.x + x2} ${center.y - y2} ${center.z - z2}`,
+        });
+
+        modelViewer2.updateHotspot({
+          name: 'hotspot-dim+X-Z',
+          position: `${center.x + x2 * 1.2} ${center.y} ${center.z - z2 * 1.2}`,
+        });
+        modelViewer2.querySelector(
+          'button[slot="hotspot-dim+X-Z"]'
+        ).textContent = `${(size.y * 100).toFixed(0)} cm`;
+
+        modelViewer2.updateHotspot({
+          name: 'hotspot-dot+X+Y-Z',
+          position: `${center.x + x2} ${center.y + y2} ${center.z - z2}`,
+        });
+
+        modelViewer2.updateHotspot({
+          name: 'hotspot-dim+Y-Z',
+          position: `${center.x} ${center.y + y2 * 1.1} ${center.z - z2 * 1.1}`,
+        });
+        modelViewer2.querySelector(
+          'button[slot="hotspot-dim+Y-Z"]'
+        ).textContent = `${(size.x * 100).toFixed(0)} cm`;
+
+        modelViewer2.updateHotspot({
+          name: 'hotspot-dot-X+Y-Z',
+          position: `${center.x - x2} ${center.y + y2} ${center.z - z2}`,
+        });
+
+        modelViewer2.updateHotspot({
+          name: 'hotspot-dim-X-Z',
+          position: `${center.x - x2 * 1.2} ${center.y} ${center.z - z2 * 1.2}`,
+        });
+        modelViewer2.querySelector(
+          'button[slot="hotspot-dim-X-Z"]'
+        ).textContent = `${(size.y * 100).toFixed(0)} cm`;
+
+        modelViewer2.updateHotspot({
+          name: 'hotspot-dot-X-Y-Z',
+          position: `${center.x - x2} ${center.y - y2} ${center.z - z2}`,
+        });
+
+        modelViewer2.updateHotspot({
+          name: 'hotspot-dim-X-Y',
+          position: `${center.x - x2 * 1.2} ${center.y - y2 * 1.1} ${center.z}`,
+        });
+        modelViewer2.querySelector(
+          'button[slot="hotspot-dim-X-Y"]'
+        ).textContent = `${(size.z * 100).toFixed(0)} cm`;
+
+        modelViewer2.updateHotspot({
+          name: 'hotspot-dot-X-Y+Z',
+          position: `${center.x - x2} ${center.y - y2} ${center.z + z2}`,
+        });
+
+        renderSVG();
+
+        modelViewer2.addEventListener('camera-change', renderSVG);
+      });
+    </script>
+
+    <!-- Loads <model-viewer> for browsers: -->
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@google/model-viewer/dist/model-viewer-module.min.js"
+    ></script>
+    <script
+      async
+      src="https://ga.jspm.io/npm:es-module-shims@1.7.1/dist/es-module-shims.js"
+    ></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@^0.160.0/build/three.module.min.js"
+        }
+      }
+    </script>
+  </body>
+</html>
