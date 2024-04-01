@@ -140,17 +140,17 @@
 
     <!-- scale: -->
     <script type="module">
-      const modelViewer2 = document.querySelector('#dimension-demo');
+      const modelViewer = document.querySelector('#dimension-demo');
 
-      modelViewer2.querySelector('#src').addEventListener('input', (event) => {
-        modelViewer2.src = event.target.value;
+      modelViewer.querySelector('#src').addEventListener('input', (event) => {
+        modelViewer.src = event.target.value;
       });
 
-      const checkbox = modelViewer2.querySelector('#show-dimensions');
+      const checkbox = modelViewer.querySelector('#show-dimensions');
 
       const dimElements = [
-        ...modelViewer2.querySelectorAll('button'),
-        modelViewer2.querySelector('#dimLines'),
+        ...modelViewer.querySelectorAll('button'),
+        modelViewer.querySelector('#dimLines'),
       ];
 
       function setVisibility(visible) {
@@ -167,8 +167,10 @@
         setVisibility(checkbox.checked);
       });
 
-      modelViewer2.addEventListener('ar-status', (event) => {
-        setVisibility(event.detail.status !== 'session-started');
+      modelViewer.addEventListener('ar-status', (event) => {
+        setVisibility(
+          checkbox.checked && event.detail.status !== 'session-started'
+        );
       });
 
       // update svg
@@ -188,120 +190,120 @@
         }
       }
 
-      const dimLines = modelViewer2.querySelectorAll('line');
+      const dimLines = modelViewer.querySelectorAll('line');
 
       const renderSVG = () => {
         drawLine(
           dimLines[0],
-          modelViewer2.queryHotspot('hotspot-dot+X-Y+Z'),
-          modelViewer2.queryHotspot('hotspot-dot+X-Y-Z'),
-          modelViewer2.queryHotspot('hotspot-dim+X-Y')
+          modelViewer.queryHotspot('hotspot-dot+X-Y+Z'),
+          modelViewer.queryHotspot('hotspot-dot+X-Y-Z'),
+          modelViewer.queryHotspot('hotspot-dim+X-Y')
         );
         drawLine(
           dimLines[1],
-          modelViewer2.queryHotspot('hotspot-dot+X-Y-Z'),
-          modelViewer2.queryHotspot('hotspot-dot+X+Y-Z'),
-          modelViewer2.queryHotspot('hotspot-dim+X-Z')
+          modelViewer.queryHotspot('hotspot-dot+X-Y-Z'),
+          modelViewer.queryHotspot('hotspot-dot+X+Y-Z'),
+          modelViewer.queryHotspot('hotspot-dim+X-Z')
         );
         drawLine(
           dimLines[2],
-          modelViewer2.queryHotspot('hotspot-dot+X+Y-Z'),
-          modelViewer2.queryHotspot('hotspot-dot-X+Y-Z')
+          modelViewer.queryHotspot('hotspot-dot+X+Y-Z'),
+          modelViewer.queryHotspot('hotspot-dot-X+Y-Z')
         ); // always visible
         drawLine(
           dimLines[3],
-          modelViewer2.queryHotspot('hotspot-dot-X+Y-Z'),
-          modelViewer2.queryHotspot('hotspot-dot-X-Y-Z'),
-          modelViewer2.queryHotspot('hotspot-dim-X-Z')
+          modelViewer.queryHotspot('hotspot-dot-X+Y-Z'),
+          modelViewer.queryHotspot('hotspot-dot-X-Y-Z'),
+          modelViewer.queryHotspot('hotspot-dim-X-Z')
         );
         drawLine(
           dimLines[4],
-          modelViewer2.queryHotspot('hotspot-dot-X-Y-Z'),
-          modelViewer2.queryHotspot('hotspot-dot-X-Y+Z'),
-          modelViewer2.queryHotspot('hotspot-dim-X-Y')
+          modelViewer.queryHotspot('hotspot-dot-X-Y-Z'),
+          modelViewer.queryHotspot('hotspot-dot-X-Y+Z'),
+          modelViewer.queryHotspot('hotspot-dim-X-Y')
         );
       };
 
-      modelViewer2.addEventListener('load', () => {
-        const center = modelViewer2.getBoundingBoxCenter();
-        const size = modelViewer2.getDimensions();
+      modelViewer.addEventListener('load', () => {
+        const center = modelViewer.getBoundingBoxCenter();
+        const size = modelViewer.getDimensions();
         const x2 = size.x / 2;
         const y2 = size.y / 2;
         const z2 = size.z / 2;
 
-        modelViewer2.updateHotspot({
+        modelViewer.updateHotspot({
           name: 'hotspot-dot+X-Y+Z',
           position: `${center.x + x2} ${center.y - y2} ${center.z + z2}`,
         });
 
-        modelViewer2.updateHotspot({
+        modelViewer.updateHotspot({
           name: 'hotspot-dim+X-Y',
           position: `${center.x + x2 * 1.2} ${center.y - y2 * 1.1} ${center.z}`,
         });
-        modelViewer2.querySelector(
+        modelViewer.querySelector(
           'button[slot="hotspot-dim+X-Y"]'
         ).textContent = `${(size.z * 100).toFixed(0)} cm`;
 
-        modelViewer2.updateHotspot({
+        modelViewer.updateHotspot({
           name: 'hotspot-dot+X-Y-Z',
           position: `${center.x + x2} ${center.y - y2} ${center.z - z2}`,
         });
 
-        modelViewer2.updateHotspot({
+        modelViewer.updateHotspot({
           name: 'hotspot-dim+X-Z',
           position: `${center.x + x2 * 1.2} ${center.y} ${center.z - z2 * 1.2}`,
         });
-        modelViewer2.querySelector(
+        modelViewer.querySelector(
           'button[slot="hotspot-dim+X-Z"]'
         ).textContent = `${(size.y * 100).toFixed(0)} cm`;
 
-        modelViewer2.updateHotspot({
+        modelViewer.updateHotspot({
           name: 'hotspot-dot+X+Y-Z',
           position: `${center.x + x2} ${center.y + y2} ${center.z - z2}`,
         });
 
-        modelViewer2.updateHotspot({
+        modelViewer.updateHotspot({
           name: 'hotspot-dim+Y-Z',
           position: `${center.x} ${center.y + y2 * 1.1} ${center.z - z2 * 1.1}`,
         });
-        modelViewer2.querySelector(
+        modelViewer.querySelector(
           'button[slot="hotspot-dim+Y-Z"]'
         ).textContent = `${(size.x * 100).toFixed(0)} cm`;
 
-        modelViewer2.updateHotspot({
+        modelViewer.updateHotspot({
           name: 'hotspot-dot-X+Y-Z',
           position: `${center.x - x2} ${center.y + y2} ${center.z - z2}`,
         });
 
-        modelViewer2.updateHotspot({
+        modelViewer.updateHotspot({
           name: 'hotspot-dim-X-Z',
           position: `${center.x - x2 * 1.2} ${center.y} ${center.z - z2 * 1.2}`,
         });
-        modelViewer2.querySelector(
+        modelViewer.querySelector(
           'button[slot="hotspot-dim-X-Z"]'
         ).textContent = `${(size.y * 100).toFixed(0)} cm`;
 
-        modelViewer2.updateHotspot({
+        modelViewer.updateHotspot({
           name: 'hotspot-dot-X-Y-Z',
           position: `${center.x - x2} ${center.y - y2} ${center.z - z2}`,
         });
 
-        modelViewer2.updateHotspot({
+        modelViewer.updateHotspot({
           name: 'hotspot-dim-X-Y',
           position: `${center.x - x2 * 1.2} ${center.y - y2 * 1.1} ${center.z}`,
         });
-        modelViewer2.querySelector(
+        modelViewer.querySelector(
           'button[slot="hotspot-dim-X-Y"]'
         ).textContent = `${(size.z * 100).toFixed(0)} cm`;
 
-        modelViewer2.updateHotspot({
+        modelViewer.updateHotspot({
           name: 'hotspot-dot-X-Y+Z',
           position: `${center.x - x2} ${center.y - y2} ${center.z + z2}`,
         });
 
         renderSVG();
 
-        modelViewer2.addEventListener('camera-change', renderSVG);
+        modelViewer.addEventListener('camera-change', renderSVG);
       });
     </script>
 
