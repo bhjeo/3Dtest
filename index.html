@@ -267,7 +267,7 @@
         });
         modelViewer.querySelector(
           'button[slot="hotspot-dim+Y-Z"]'
-        ).textContent = `${(size.x * 100).toFixed(0)} cm`;
+        ).textContent = `${(size.x * 100).toFixed(1)} cm`;
 
         modelViewer.updateHotspot({
           name: 'hotspot-dot-X+Y-Z',
@@ -280,7 +280,7 @@
         });
         modelViewer.querySelector(
           'button[slot="hotspot-dim-X-Z"]'
-        ).textContent = `${(size.y * 100).toFixed(0)} cm`;
+        ).textContent = `${(size.y * 100).toFixed(1)} cm`;
 
         modelViewer.updateHotspot({
           name: 'hotspot-dot-X-Y-Z',
@@ -293,7 +293,7 @@
         });
         modelViewer.querySelector(
           'button[slot="hotspot-dim-X-Y"]'
-        ).textContent = `${(size.z * 100).toFixed(0)} cm`;
+        ).textContent = `${(size.z * 100).toFixed(1)} cm`;
 
         modelViewer.updateHotspot({
           name: 'hotspot-dot-X-Y+Z',
